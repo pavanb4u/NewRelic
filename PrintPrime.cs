@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Timers  ;
+using SysTimer = System.Timers;
 
 namespace HighestPrimInAMinute
 {
@@ -21,24 +17,22 @@ namespace HighestPrimInAMinute
                 Thread oThread = new Thread(new ThreadStart(findPrimeNumbers));
 
                 DateTime startTime = DateTime.Now;
-                //string startTime = DateTime.Now.ToString();                
+
                 oThread.Start();
                 DateTime endTime = startTime.AddSeconds(60);
                 Console.WriteLine("Program started at {0} ", startTime.ToString());
 
-                //start clock to show time each second
-               //System.Timers.Timer timer = new System.Timers.Timer (printStatus, "Current Status", TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
-                System.Timers.Timer logTimer = new System.Timers.Timer(10000);
+                SysTimer.Timer logTimer = new SysTimer.Timer(10000);
                 // Hook up the Elapsed event for the timer. 
                 logTimer.Elapsed += OnTimedEvent;
                 logTimer.AutoReset = true;
                 logTimer.Enabled = true;
 
-                //wait for one minute for primeNumber generation
+                //wait for one minute from start time  for primeNumber generation
                 Thread.Sleep(endTime.Subtract(DateTime.Now));
-                
+
                 stopCount = true;
-                
+
                 oThread.Join();
 
                 logTimer.Stop();
@@ -55,9 +49,9 @@ namespace HighestPrimInAMinute
         }
 
         // prints current time
-        private static void OnTimedEvent(Object state, ElapsedEventArgs args)
-        {            
-            Console.WriteLine("\r Current Prime number at {0} is {1}", DateTime.Now , primeNumber);
+        private static void OnTimedEvent(Object state,  SysTimer.ElapsedEventArgs args)
+        {
+            Console.WriteLine("\r Current Prime number at {0} is {1}", DateTime.Now, primeNumber);
         }
 
         /// <summary>
