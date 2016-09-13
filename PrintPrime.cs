@@ -20,8 +20,10 @@ namespace HighestPrimInAMinute
                 Thread oThread = new Thread(new ThreadStart(findPrimeNumbers));
 
                 string startTime = DateTime.Now.ToString();
-
+                
                 oThread.Start();
+                Console.WriteLine("Program started at {0} ", startTime);
+
                 //start clock to show time each second
                 Timer timer = new Timer(printStatus, "Current Status", TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
 
@@ -48,9 +50,8 @@ namespace HighestPrimInAMinute
 
         // prints current time
         private static void printStatus(object state)
-        {
-            //Console.Write("\rTimer: {0}   ", DateTime.Now);
-            Console.WriteLine(primeNumber);
+        {            
+            Console.WriteLine("\r Current Prime number at {0} is {1}", DateTime.Now , primeNumber);
         }
 
         /// <summary>
