@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers  ;
 
 namespace HighestPrimInAMinute
 {
@@ -19,24 +20,29 @@ namespace HighestPrimInAMinute
             {
                 Thread oThread = new Thread(new ThreadStart(findPrimeNumbers));
 
-                string startTime = DateTime.Now.ToString();
-                
+                DateTime startTime = DateTime.Now;
+                //string startTime = DateTime.Now.ToString();                
                 oThread.Start();
-                Console.WriteLine("Program started at {0} ", startTime);
+                DateTime endTime = startTime.AddSeconds(60);
+                Console.WriteLine("Program started at {0} ", startTime.ToString());
 
                 //start clock to show time each second
-                Timer timer = new Timer(printStatus, "Current Status", TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+               //System.Timers.Timer timer = new System.Timers.Timer (printStatus, "Current Status", TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+                System.Timers.Timer logTimer = new System.Timers.Timer(10000);
+                // Hook up the Elapsed event for the timer. 
+                logTimer.Elapsed += OnTimedEvent;
+                logTimer.AutoReset = true;
+                logTimer.Enabled = true;
 
                 //wait for one minute for primeNumber generation
-                Thread.Sleep(60000);
-                Console.WriteLine("set to true");
+                Thread.Sleep(endTime.Subtract(DateTime.Now));
+                
                 stopCount = true;
-                //oThread.Abort();
-
+                
                 oThread.Join();
 
-                timer.Change(-1, -1); // Stop the timer from running.
-                timer.Dispose();
+                logTimer.Stop();
+                logTimer.Dispose();
 
                 Console.WriteLine("\nThread started at {0} and stopped at : {1}", startTime, DateTime.Now);
                 Console.WriteLine("\nMax prime number calculated: {0} ", primeNumber);
@@ -49,7 +55,7 @@ namespace HighestPrimInAMinute
         }
 
         // prints current time
-        private static void printStatus(object state)
+        private static void OnTimedEvent(Object state, ElapsedEventArgs args)
         {            
             Console.WriteLine("\r Current Prime number at {0} is {1}", DateTime.Now , primeNumber);
         }
