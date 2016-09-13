@@ -7,9 +7,12 @@ using System.Threading.Tasks;
 
 namespace HighestPrimInAMinute
 {
-    class Program
+    class PrintPrime
     {
+        //primeNumber will be accessed by Multiple Threads
         private static long primeNumber;
+        private static volatile bool stopCount;
+
         static void Main(string[] args)
         {
             try
@@ -20,16 +23,18 @@ namespace HighestPrimInAMinute
 
                 oThread.Start();
                 //start clock to show time each second
-                Timer timer = new Timer(printStatus, "Some state", TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
-                
+                Timer timer = new Timer(printStatus, "Current Status", TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+
                 //wait for one minute for primeNumber generation
                 Thread.Sleep(60000);
-
-                oThread.Abort();
+                Console.WriteLine("set to true");
+                stopCount = true;
+                //oThread.Abort();
 
                 oThread.Join();
 
                 timer.Change(-1, -1); // Stop the timer from running.
+                timer.Dispose();
 
                 Console.WriteLine("\nThread started at {0} and stopped at : {1}", startTime, DateTime.Now);
                 Console.WriteLine("\nMax prime number calculated: {0} ", primeNumber);
@@ -53,23 +58,31 @@ namespace HighestPrimInAMinute
         /// </summary>
         public static void findPrimeNumbers()
         {
-            Console.WriteLine();
-            //iterate all odd numbers and check if it is a prime number
-            for (long i = 3; i < long.MaxValue; i += 2)
+            try
             {
-                bool isPrime = true;
-                for (long j = 3; (j * j) <= i; j += 2)
+
+                //iterate all odd numbers and check if it is a prime number
+                for (long i = 3; i < long.MaxValue && !stopCount; i += 2)
                 {
-                    if ((i % j) == 0)
+                    bool isPrime = true;
+                    for (long j = 3; (j * j) <= i; j += 2)
                     {
-                        isPrime = false;
-                        break;
+                        if ((i % j) == 0)
+                        {
+                            isPrime = false;
+                            break;
+                        }
                     }
+                    if (isPrime)
+                        primeNumber = i;
                 }
-                if (isPrime)
-                    primeNumber = i;
+
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                Console.WriteLine("Failed with Exception" + ex.Message);
             }
         }
-
     }
 }
